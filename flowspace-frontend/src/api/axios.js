@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8081/api',
+  baseURL: 'https://flowspace-backend-f1095.containers.snapdeploy.app/api',
 });
 
 api.interceptors.request.use((config) => {

@@ -19,8 +19,9 @@ public class TaskListController {
     public ResponseEntity<?> createList(@PathVariable Long boardId, @RequestBody TaskList taskList) {
         return boardRepository.findById(boardId).map(board -> {
             taskList.setBoard(board);
-            taskList.setCards(new java.util.ArrayList<>()); // Pastiin list card-nya kosong dulu
-            return ResponseEntity.ok(taskListRepository.save(taskList));
+            taskList.setCards(new java.util.ArrayList<>());
+            taskListRepository.save(taskList); 
+            return ResponseEntity.ok().build();
         }).orElse(ResponseEntity.notFound().build());
     }
     

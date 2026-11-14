@@ -484,7 +484,17 @@ export default function BoardDetail() {
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Workspace...</div>;
+    if (loading) return (
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-8 font-sans flex flex-col items-center justify-center transition-colors">
+      <div className="flex flex-col items-center gap-4">
+        {/* Spinner Animasi */}
+        <div className="w-12 h-12 border-4 border-slate-200 dark:border-slate-800 border-t-blue-600 dark:border-t-blue-500 rounded-full animate-spin"></div>
+        <p className="text-sm font-medium text-slate-500 dark:text-slate-400 animate-pulse">
+          Loading Workspace...
+        </p>
+      </div>
+    </div>
+  );
   if (!board) return null;
 
   return (
@@ -514,14 +524,15 @@ export default function BoardDetail() {
       {/* HEADER NAVBAR (Sesuai Desain UI V2) */}
       <header className="relative z-10 border-b border-slate-200 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/90 backdrop-blur sticky top-0 z-30 transition-colors">
 
-        {/* BARIS ATAS: Logo, Search, Action Buttons */}
+      {/* BARIS ATAS: Logo, Search, Action Buttons */}
         <div className="px-4 lg:px-8 py-3 flex flex-col md:flex-row gap-4 items-center justify-between border-b border-slate-200 dark:border-slate-800/60">
-          <div className="flex items-center gap-3 w-full md:w-auto justify-between">
+          
+          {/* SISI KIRI: Logo, Judul, DAN PROFIL (Pas di HP) */}
+          <div className="flex items-center justify-between w-full md:w-auto gap-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm">
                 <WorkspaceLayersLogo className="w-6 h-6" />
               </div>
-
               <div>
                 <h1 className="font-bold text-base md:text-lg text-slate-900 dark:text-slate-100 tracking-wide">
                   {board.name}
@@ -529,8 +540,54 @@ export default function BoardDetail() {
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">Spring Boot + React V2 Ecosystem</p>
               </div>
             </div>
+
+            {/* PROFILE DROPDOWN (Dipindah ke sini biar muncul di HP) */}
+            <div className="relative block md:hidden">
+              <button 
+                onClick={(e) => { e.stopPropagation(); setIsProfileOpen(!isProfileOpen); }}
+                className="flex items-center gap-2 pl-2 sm:pl-4 border-l border-slate-200 dark:border-slate-800 outline-none"
+              >
+                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 flex items-center justify-center text-white font-bold text-xs shadow-md">
+                  {localStorage.getItem('name')?.charAt(0).toUpperCase() || 'U'}
+                </div>
+                {/* Nama disembunyiin di HP, biar cuma inisial aja */}
+                <div className="hidden sm:flex flex-col items-start">
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-tight">
+                    {localStorage.getItem('name') || 'User'}
+                  </span>
+                  <span className="text-[10px] text-blue-600 dark:text-blue-400 font-mono font-semibold">
+                    {localStorage.getItem('role') || 'USER'}
+                  </span>
+                </div>
+                <ChevronDown className="w-4 h-4 text-slate-400" />
+              </button>
+
+              {/* PROFILE DROPDOWN MENU */}
+              {isProfileOpen && (
+                <div 
+                  onClick={(e) => e.stopPropagation()}
+                  className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2">
+                  <div className="p-4 border-b border-slate-200 dark:border-slate-800">
+                    <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{localStorage.getItem('name')}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate">@{localStorage.getItem('username')}</p>
+                  </div>
+                  <div className="p-2">
+                    <button onClick={toggleTheme} className="w-full text-left flex items-center justify-between px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors font-medium mb-1">
+                      <div className="flex items-center gap-2">
+                        {isDark ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-blue-500" />}
+                        <span>{isDark ? 'Mode Terang' : 'Mode Gelap'}</span>
+                      </div>
+                    </button>
+                    <button onClick={() => navigate('/dashboard')} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors font-medium">
+                      <LayoutDashboard className="w-4 h-4" /> Dashboard
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
+          {/* SISI KANAN: Input Search, Toggle Board/List, Tombol Aksi */}
           <div className="flex flex-wrap md:flex-nowrap items-center gap-2.5 w-full md:w-auto">
             
             {/* INPUT SEARCH */}
@@ -543,7 +600,7 @@ export default function BoardDetail() {
                 onChange={e => setSearchQuery(e.target.value)} 
                 className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-900 dark:text-slate-200 focus:border-blue-500 transition-all" 
               />
-            </div> {/* <--- INI PENUTUP DIV YANG TADI KURANG */}
+            </div>
 
             {/* TOGGLE BOARD/LIST */}
             <div className="flex items-center bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-1">
@@ -552,13 +609,17 @@ export default function BoardDetail() {
             </div>
 
             {/* TOMBOL KOLOM & TASK */}
-            <button onClick={() => setIsColumnModalOpen(true)} className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-medium border border-slate-200 dark:border-slate-700 transition-colors flex items-center gap-1.5"><PlusCircle className="w-3.5 h-3.5 text-indigo-500" /> Kolom</button>
-            <button onClick={() => openCreateTaskModal()} className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-medium text-xs shadow-lg shadow-blue-600/25 transition-all flex items-center gap-1.5"><Plus className="w-4 h-4" /> Task Baru</button>
+            <button onClick={() => setIsColumnModalOpen(true)} className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-medium border border-slate-200 dark:border-slate-700 transition-colors flex items-center gap-1.5">
+              <PlusCircle className="w-3.5 h-3.5 text-indigo-500" /> Kolom
+            </button>
+            <button onClick={() => openCreateTaskModal()} className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-medium text-xs shadow-lg shadow-blue-600/25 transition-all flex items-center gap-1.5">
+              <Plus className="w-4 h-4" /> Task Baru
+            </button>
             <button onClick={() => navigate(`/board/${id}/calendar`)} className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium text-xs shadow-lg transition-all flex items-center gap-1.5">
               <Calendar className="w-4 h-4" /> Kalender
             </button>
 
-            {/* PROFILE DROPDOWN */}
+            {/* 👇 TAMBAHIN PROFIL LAPTOP DI SINI BREE 👇 */}
             <div className="relative ml-2 hidden md:block">
               <button 
                 onClick={(e) => { e.stopPropagation(); setIsProfileOpen(!isProfileOpen); }}
@@ -588,22 +649,14 @@ export default function BoardDetail() {
                     <p className="text-xs text-slate-500 dark:text-slate-400 truncate">@{localStorage.getItem('username')}</p>
                   </div>
                   <div className="p-2">
-                  
-                    {/* TOMBOL TOGGLE DARK/LIGHT DI SINI BREE */}
-                    <button 
-                      onClick={toggleTheme} 
-                      className="w-full text-left flex items-center justify-between px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors font-medium mb-1">
+                    <button onClick={toggleTheme} className="w-full text-left flex items-center justify-between px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors font-medium mb-1">
                       <div className="flex items-center gap-2">
                         {isDark ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-blue-500" />}
                         <span>{isDark ? 'Mode Terang' : 'Mode Gelap'}</span>
                       </div>
-                      {/* Ikon panah kecil opsional */}
                     </button>
-
-                    <button 
-                      onClick={() => navigate('/dashboard')} 
-                      className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors font-medium">
-                      <LayoutDashboard className="w-4 h-4" /> Logout
+                    <button onClick={() => navigate('/dashboard')} className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors font-medium">
+                      <LayoutDashboard className="w-4 h-4" /> Dashboard
                     </button>
                   </div>
                 </div>
